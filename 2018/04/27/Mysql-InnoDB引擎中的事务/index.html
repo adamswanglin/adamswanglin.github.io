@@ -2,7 +2,7 @@
 <html lang="en">
 
 <!-- Head tag -->
-<head>
+    <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
@@ -220,18 +220,21 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1><span id="数据库中事务">数据库中事务</span></h1>
-<h2><span id="事务的acid">事务的ACID</span></h2>
-<h3><span id="原子性atomicity">原子性（Atomicity）</span></h3>
+                <blockquote>
+<p>介绍了事务的ACID特性，MySQL各个隔离级别下的实现方式。</p>
+</blockquote>
+<h1><span id="数据库中事务">数据库中事务</span></h1>
+<h2><span id="11事务的acid">1.1事务的ACID</span></h2>
+<h3><span id="111原子性atomicity">1.1.1原子性（Atomicity）</span></h3>
 <p>定义：事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行</p>
-<h3><span id="一致性consistency">一致性（Consistency）</span></h3>
+<h3><span id="112-一致性consistency">1.1.2 一致性（Consistency）</span></h3>
 <p>定义：事务应确保数据库的状态从一个一致状态转变为另一个一致状态。<em>一致状态</em>的含义是数据库中的数据应满足完整性约束</p>
-<h3><span id="隔离性isolation">隔离性（Isolation)</span></h3>
+<h3><span id="114-隔离性isolation">1.1.4 隔离性（Isolation)</span></h3>
 <p>定义：多个事务并发执行时，一个事务的执行不应影响其他事务的执行</p>
-<h3><span id="持久性durability">持久性（Durability）</span></h3>
+<h3><span id="113-持久性durability">1.1.3 持久性（Durability）</span></h3>
 <p>定义：已被提交的事务对数据库的修改应该永久保存在数据库中</p>
-<h1><span id="mysql数据库innodb引擎中的实现">MySQL数据库InnoDB引擎中的实现</span></h1>
-<h2><span id="基于两阶段锁的多版本并发控制lock-based-mvcc">基于两阶段锁的多版本并发控制（Lock-Based MVCC）</span></h2>
+<h1><span id="2mysql数据库innodb引擎中的实现">2.MySQL数据库InnoDB引擎中的实现</span></h1>
+<h2><span id="21-基于两阶段锁的多版本并发控制lock-based-mvcc">2.1 基于两阶段锁的多版本并发控制（Lock-Based MVCC）</span></h2>
 <p>快照读</p>
 <p>select * from xxx where</p>
 <p>当前读</p>
@@ -248,8 +251,8 @@
 <p>select … in share mode;</p>
 <p><code>select * from table_a where id=1 in share mode</code></p>
 <p>MVCC对每条记录都会记录版本，包括最新版本和之前修改的一些版本；对于快照读，读取的是本事务<strong>可见</strong>的版本，可能是最新版本，也可能是某个历史版本；对于当前读，读取的是最新版本，并且同时会对记录加锁，保证记录不会被其他事务修改。</p>
-<h2><span id="两阶段锁">两阶段锁</span></h2>
-<h3><span id="两阶段加锁阶段和解锁阶段不重合">两阶段：加锁阶段和解锁阶段不重合</span></h3>
+<h2><span id="22-两阶段锁">2.2 两阶段锁</span></h2>
+<h3><span id="221-两阶段加锁阶段和解锁阶段不重合">2.2.1 两阶段：加锁阶段和解锁阶段不重合</span></h3>
 <p>时间上：</p>
 <table>
 <thead>
@@ -284,7 +287,7 @@
 <blockquote>
 <p>有例外，在read-committed隔离级别下会讲到</p>
 </blockquote>
-<h3><span id="锁的类型">锁的类型</span></h3>
+<h3><span id="222-锁的类型">2.2.2 锁的类型</span></h3>
 <p>1.记录锁（Record Lock）</p>
 <p>InnoDB里的行锁，锁的是索引</p>
 <p>InnoDB一般是B+Tree索引：</p>
@@ -361,7 +364,7 @@
 <p>(3,+∞)加入GAP锁，防止新纪录插入</p>
 <p>3.Next Key Lock</p>
 <p>记录锁+间隙锁</p>
-<h3><span id="锁的模式">锁的模式</span></h3>
+<h3><span id="223锁的模式">2.2.3锁的模式</span></h3>
 <p>共享锁（S）锁，排他锁（X）锁</p>
 <p>**共享锁：**共享锁的作用通常用于在事务中读取一条行记录后，不希望它被别的事务锁修改，但所有的读请求产生的LOCK_S锁是不冲突的。</p>
 <p>常见场景：</p>
@@ -369,14 +372,14 @@
 <p>2.外键检查</p>
 <p>3.insert into 检查duplicate key时</p>
 <p>**排他锁：**排他锁的作用主要是避免对同一条记录的并发修改。通常对于UPDATE或者DELETE操作，或者类似SELECT … FOR UPDATE操作，都会对记录加排他锁。</p>
-<h2><span id="未提交读-read-uncommitted">未提交读 Read-Uncommitted</span></h2>
+<h2><span id="23-未提交读-read-uncommitted">2.3 未提交读 Read-Uncommitted</span></h2>
 <p>实际不会使用，忽略</p>
-<h2><span id="提交读-read-committed">提交读 Read-Committed</span></h2>
+<h2><span id="24-提交读-read-committed">2.4 提交读 Read-Committed</span></h2>
 <p>t_test_01表结构</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_test_01`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">COLLATE</span> utf8_unicode_ci <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`code`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">COLLATE</span> utf8_unicode_ci <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`status`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`uk_code`</span> (<span class="string">`code`</span>) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_status`</span> (<span class="string">`status`</span>) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> AUTO_INCREMENT=<span class="number">4194271</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 <span class="keyword">COLLATE</span>=utf8_unicode_ci;</span><br></pre></td></tr></table></figure>
 <p>数据400W行，idx_status区分度也很高。</p>
 <p>为了模拟两个并发的transaction，在naveicat之类的客户端中打开两个页面（执行的查询是两个session）；同时为了模拟语句执行的先后次序，语句中有select sleep(10)，表示当前执行语句的线程暂停10s。</p>
-<h3><span id="不可重复读"><strong>不可重复读</strong></span></h3>
+<h3><span id="241-不可重复读"><strong>2.4.1 不可重复读</strong></span></h3>
 <p><strong>实际语句：</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'read-committed'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'read-committed'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">update</span> t_test_01 <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">"newName"</span> <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
@@ -429,11 +432,11 @@
 </table>
 <p><strong>结果：</strong></p>
 <p>语句2和语句6得到的结果不一致，语句6读到的name是被transactionB修改的；同一个transaction相同语句读到的结果不一致。</p>
-<h3><span id="rc级别下update-where-加锁后释放锁">RC级别下update … where 加锁后释放锁</span></h3>
+<h3><span id="242-rc级别下update-where-加锁后释放锁">2.4.2 RC级别下update … where 加锁后释放锁</span></h3>
 <p>t_test_01表结构</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t_test_01`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">bigint</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">COLLATE</span> utf8_unicode_ci <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`code`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">COLLATE</span> utf8_unicode_ci <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`status`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`uk_code`</span> (<span class="string">`code`</span>) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_status`</span> (<span class="string">`status`</span>) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> AUTO_INCREMENT=<span class="number">4194271</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 <span class="keyword">COLLATE</span>=utf8_unicode_ci;</span><br></pre></td></tr></table></figure>
 <p>数据400W行，idx_status区分度也很高</p>
-<h4><span id="code为唯一索引存在code9不存在code9-and-version1的情况">code为唯一索引，存在code=‘9’，不存在code=‘9’ and version=1的情况</span></h4>
+<h4><span id="1code为唯一索引存在code9不存在code9-and-version1的情况">1.code为唯一索引，存在code=‘9’，不存在code=‘9’ and version=1的情况</span></h4>
 <p><strong>实际语句</strong>：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#transactionA</span><br><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'read-committed'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line">	<span class="keyword">select</span> * <span class="keyword">from</span> t_test_version <span class="keyword">where</span> code=<span class="string">'9'</span> <span class="keyword">and</span> <span class="keyword">version</span>=<span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line">	<span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#transactionB</span><br><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'read-committed'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line">	<span class="keyword">select</span> * <span class="keyword">from</span> t_test_version <span class="keyword">where</span> code=<span class="string">'9'</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
@@ -476,7 +479,7 @@
 </table>
 <p><strong>结果</strong>：</p>
 <p>语句3中transactionB获取锁阻塞，说明<code>select * from t_test_version where code='9' and version=1 for update;</code>未找到记录但是对code='9’的记录加锁了。</p>
-<h4><span id="status为非唯一索引存在status9不存在status9-and-version1的情况">status为非唯一索引，存在status=‘9’，不存在status=‘9’ and version=1的情况</span></h4>
+<h4><span id="2status为非唯一索引存在status9不存在status9-and-version1的情况">2.status为非唯一索引，存在status=‘9’，不存在status=‘9’ and version=1的情况</span></h4>
 <p><strong>实际语句：</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'read-committed'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line">	<span class="keyword">select</span> * <span class="keyword">from</span> t_test_version <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span> <span class="keyword">and</span> <span class="keyword">version</span>=<span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line">	<span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'read-committed'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line">	<span class="keyword">select</span> * <span class="keyword">from</span> t_test_version <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
@@ -519,8 +522,8 @@
 </table>
 <p><strong>结果：</strong></p>
 <p>语句3中transactionB获取锁未阻塞，感觉上<code>select * from t_test_version where status=9 and version=1 for update;</code>未对status=9的记录加锁一样，实际上MySQL对这种非唯一索引加锁后，如果发现不符合where条件会立即释放锁，这也是稍微违背两阶段加锁原则的地方。</p>
-<h2><span id="可重复读-repeatable-read">可重复读 Repeatable-Read</span></h2>
-<h3><span id="无不可重复读">无不可重复读</span></h3>
+<h2><span id="25-可重复读-repeatable-read">2.5 可重复读 Repeatable-Read</span></h2>
+<h3><span id="251-无不可重复读">2.5.1 无不可重复读</span></h3>
 <p><strong>实际语句：</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'repeatable-read'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span> tx_isolation=<span class="string">'repeatable-read'</span>;</span><br><span class="line"><span class="keyword">select</span> @@tx_isolation;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">update</span> t_test_01 <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">"newName"</span> <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
@@ -568,7 +571,7 @@
 </table>
 <p><strong>结果：</strong></p>
 <p>语句2和语句6的执行结果一样，虽然TransactionB在中间修改了name。</p>
-<h3><span id="快照读不存在幻读">快照读不存在幻读</span></h3>
+<h3><span id="252-快照读不存在幻读">2.5.2 快照读不存在幻读</span></h3>
 <p><strong>实际语句：</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>&gt;=<span class="number">8</span> <span class="keyword">and</span> <span class="keyword">status</span>&lt;=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>&gt;=<span class="number">8</span> <span class="keyword">and</span> <span class="keyword">status</span>&lt;=<span class="number">10</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_test_01(<span class="keyword">name</span>, code, <span class="keyword">status</span>) <span class="keyword">values</span>(<span class="string">"name20000002"</span>, <span class="number">200000002</span>, <span class="number">9</span>);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
@@ -621,7 +624,7 @@
 </table>
 <p><strong>结果：</strong></p>
 <p>语句2和语句6读取的结果行数一样；MVCC读取快照，第一次读取之后，后面读取的版本都和第一次读的版本一致，只有在数据被本事务更新后会读取最新版本，所以快照读一致，不存在幻读。</p>
-<h3><span id="当前读不存在幻读">当前读不存在幻读</span></h3>
+<h3><span id="253-当前读不存在幻读">2.5.3 当前读不存在幻读</span></h3>
 <p><strong>实际语句：</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>&gt;=<span class="number">8</span> <span class="keyword">and</span> <span class="keyword">status</span>&lt;=<span class="number">10</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>&gt;=<span class="number">8</span> <span class="keyword">and</span> <span class="keyword">status</span>&lt;=<span class="number">10</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t_test_01(<span class="keyword">name</span>, code, <span class="keyword">status</span>) <span class="keyword">values</span>(<span class="string">"name20000003"</span>, <span class="number">200000003</span>, <span class="number">9</span>);</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
@@ -674,7 +677,7 @@
 </table>
 <p><strong>结果：</strong></p>
 <p>TransactionB中的语句4执行被阻塞了，TransactionA commit之后4才开始执行；通过加gap lock间隙锁保证当前读之间一致，不存在幻读。</p>
-<h3><span id="rr级别中存在的幻读">RR级别中存在的幻读</span></h3>
+<h3><span id="254-rr级别中存在的幻读">2.5.4 RR级别中存在的幻读</span></h3>
 <h4><span id="场景1">场景1</span></h4>
 <p><strong>实际语句：</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t_test_01 <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
@@ -802,10 +805,10 @@
 <p><strong>结果:</strong></p>
 <p>和场景1仅语句7有差别：场景1中select ** for update，场景2中 update **；两种场景中，结果不一样。场景2中语句8的结果受到了TransactionB的影响。</p>
 <p>可以说RR级别中的幻读存在于快照读和当前读之间不一致，即：读到的数据和更新时数据不一致。</p>
-<h2><span id="可序列化">可序列化</span></h2>
-<h4><span id="不存在幻读">不存在幻读</span></h4>
+<h2><span id="26-可序列化">2.6 可序列化</span></h2>
+<h4><span id="1不存在幻读">1.不存在幻读</span></h4>
 <p>实际中也不会使用，类似于RR级别基础上对所有快照读加上 in share mode，读写会冲突</p>
-<h2><span id="总结">总结</span></h2>
+<h2><span id="27-总结">2.7 总结</span></h2>
 <p>MySQL实现的隔离级别和SQL规范中的略微不同，主要体现在RR级别下的幻读</p>
 
                 
@@ -842,7 +845,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">数据库中事务</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">事务的ACID</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">原子性（Atomicity）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">一致性（Consistency）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">隔离性（Isolation)</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">1.1.4.</span> <span class="toc-nav-text">持久性（Durability）</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">MySQL数据库InnoDB引擎中的实现</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">基于两阶段锁的多版本并发控制（Lock-Based MVCC）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">两阶段锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text">两阶段：加锁阶段和解锁阶段不重合</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text">锁的类型</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.2.3.</span> <span class="toc-nav-text">锁的模式</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">未提交读 Read-Uncommitted</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">提交读 Read-Committed</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.1.</span> <span class="toc-nav-text">不可重复读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.2.</span> <span class="toc-nav-text">RC级别下update … where 加锁后释放锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.2.1.</span> <span class="toc-nav-text">code为唯一索引，存在code=‘9’，不存在code=‘9’ and version=1的情况</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.4.2.2.</span> <span class="toc-nav-text">status为非唯一索引，存在status=‘9’，不存在status=‘9’ and version=1的情况</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text">可重复读 Repeatable-Read</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.1.</span> <span class="toc-nav-text">无不可重复读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.2.</span> <span class="toc-nav-text">快照读不存在幻读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.3.</span> <span class="toc-nav-text">当前读不存在幻读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.4.</span> <span class="toc-nav-text">RR级别中存在的幻读</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.4.1.</span> <span class="toc-nav-text">场景1</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.5.4.2.</span> <span class="toc-nav-text">场景2</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.6.</span> <span class="toc-nav-text">可序列化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.6.0.1.</span> <span class="toc-nav-text">不存在幻读</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-number">2.7.</span> <span class="toc-nav-text">总结</span></a></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">数据库中事务</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">1.1事务的ACID</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">1.1.1原子性（Atomicity）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">1.1.2 一致性（Consistency）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">1.1.4 隔离性（Isolation)</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">1.1.3 持久性（Durability）</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.MySQL数据库InnoDB引擎中的实现</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.1 基于两阶段锁的多版本并发控制（Lock-Based MVCC）</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.2 两阶段锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.2.1 两阶段：加锁阶段和解锁阶段不重合</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.2.2 锁的类型</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.2.3锁的模式</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.3 未提交读 Read-Uncommitted</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.4 提交读 Read-Committed</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.4.1 不可重复读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.4.2 RC级别下update … where 加锁后释放锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">1.code为唯一索引，存在code=‘9’，不存在code=‘9’ and version=1的情况</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.status为非唯一索引，存在status=‘9’，不存在status=‘9’ and version=1的情况</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.5 可重复读 Repeatable-Read</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.5.1 无不可重复读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.5.2 快照读不存在幻读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.5.3 当前读不存在幻读</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.5.4 RR级别中存在的幻读</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">场景1</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">场景2</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.6 可序列化</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">1.不存在幻读</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#undefined"><span class="toc-nav-text">2.7 总结</span></a></li></ol></li></ol>
         
         </div>
       </aside>
@@ -875,13 +878,6 @@
                 
 
                 <!-- Friends Blog -->
-                
-                <hr>
-                <h5>FRIENDS</h5>
-                <ul class="list-inline">
-
-                    
-                </ul>
                 
             </div>
         </div>
@@ -1055,7 +1051,7 @@
 
 <script>
     // dynamic User by Hux
-    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaId = '8964d50ede9f2d76b4c81ccd6a2ad801';
     var _gaDomain = 'adamswanglin.github.io';
 
     // Originial
