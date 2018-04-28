@@ -213,6 +213,39 @@
 
 <div class="post-preview">
 
+    <a href="/2018/04/28/mysql-lock/">
+        <h2 class="post-title">
+            MySQL事务与锁-2
+        </h2>
+        <h3 class="post-subtitle">
+            锁的应用-MySQL悲观锁乐观锁，基于Redis的分布式锁
+        </h3>
+        <div class="post-content-preview">
+            1.数据库锁的使用
+1.1 锁的副作用
+1.1.1 锁等待
+12345678910#正在执行的事务SELECT * from information_schema.INNODB_TRX;#当前出现的锁等待SELECT * from information_schema.INNODB_LOCK_WAITS;#出现锁等待的锁的详细信息SELECT * from information_schem......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 王霖 on
+            2018-04-28
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#MySQL" title="MySQL">MySQL</a>
+            
+              <a href="/tags/#分布式锁" title="分布式锁">分布式锁</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
     <a href="/2018/04/27/mysql-transaction/">
         <h2 class="post-title">
             MySQL事务与锁-1
@@ -242,11 +275,7 @@
             
               <a href="/tags/#MySQL" title="MySQL">MySQL</a>
             
-              <a href="/tags/#InnoDB" title="InnoDB">InnoDB</a>
-            
               <a href="/tags/#数据库" title="数据库">数据库</a>
-            
-              <a href="/tags/#事务" title="事务">事务</a>
             
         </div>
     
@@ -286,7 +315,7 @@
     <div class="tags">
         
             
-        
+            <a href="/tags/#MySQL" title="MySQL" rel="2">MySQL</a>
             
         
             
@@ -343,6 +372,10 @@
   <h5>RECENT POSTS</h3>
   <div class="widget">
     <ul>
+      
+        <li>
+          <a href="/2018/04/28/mysql-lock/">MySQL事务与锁-2</a>
+        </li>
       
         <li>
           <a href="/2018/04/27/mysql-transaction/">MySQL事务与锁-1</a>
