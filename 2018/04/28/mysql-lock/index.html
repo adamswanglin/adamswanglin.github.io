@@ -85,7 +85,7 @@
     <div id="signature">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1" style="margin-left: 0px">
                 
                     <div class="post-heading">
                         <div class="tags">
@@ -153,6 +153,13 @@
 
                         
                         <li>
+                            <a href="/categories/">categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
                             <a href="/archive/">Archives</a>
                         </li>
                         
@@ -212,15 +219,15 @@
 
             <!-- Post Container -->
             <div class="
-                col-lg-8 col-lg-offset-2
+                col-lg-9 col-lg-offset-2
                 col-md-10 col-md-offset-1
-                post-container">
+                post-container" style="margin-left:0">
 
-                <h1 id="1数据库锁的使用">1.数据库锁的使用</h1>
-<h2 id="11-锁的副作用">1.1 锁的副作用</h2>
-<h3 id="111-锁等待">1.1.1 锁等待</h3>
+                <h1 id="数据库锁的使用">数据库锁的使用</h1>
+<h2 id="锁的副作用">锁的副作用</h2>
+<h3 id="锁等待">锁等待</h3>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#正在执行的事务</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">from</span> information_schema.INNODB_TRX;</span><br><span class="line">#当前出现的锁等待</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">from</span> information_schema.INNODB_LOCK_WAITS;</span><br><span class="line">#出现锁等待的锁的详细信息</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">from</span> information_schema.INNODB_LOCKS;</span><br><span class="line">#查看全部线程，辅助定位客户端的主机ip，连接用户名等</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">full</span> <span class="keyword">processlist</span>;</span><br><span class="line">#如果活跃事务少，会显示当前活跃的事务详细信息，多的话只显示概要；最近一次死锁的信息</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">engine</span> <span class="keyword">innodb</span> <span class="keyword">status</span>;</span><br></pre></td></tr></table></figure>
-<h3 id="112-死锁">1.1.2 死锁</h3>
+<h3 id="死锁">死锁</h3>
 <p>死锁都是由加锁顺序不一致导致的，最常见的update死锁，insert也能造成死锁，有兴趣的可以自行了解</p>
 <table>
 <thead>
@@ -258,14 +265,14 @@
 </table>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">TRANSACTION</span>;</span><br><span class="line"><span class="keyword">update</span> t_test_01 <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">"name8"</span> <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sleep</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">update</span> t_test_01 <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">"name9"</span> <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">update</span> t_test_01 <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">"name9"</span> <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">9</span>;</span><br><span class="line"><span class="keyword">update</span> t_test_01 <span class="keyword">set</span> <span class="keyword">name</span>=<span class="string">"name8"</span> <span class="keyword">where</span> <span class="keyword">status</span>=<span class="number">8</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
-<h3 id="113-减少死锁锁等待">1.1.3 减少死锁锁等待</h3>
+<h3 id="减少死锁锁等待">减少死锁锁等待</h3>
 <p>1.小事务</p>
 <p>事务加锁范围不宜过大，如果比较大，业务上能分割的尽量分割。</p>
 <p>例如：订单定时完成的批量，查出一批需要完成的订单，每个订单单独的事务处理，而不是放到一个大的事务里。</p>
 <p>2.统一加锁顺序</p>
 <p>3.update对应的查询走索引</p>
-<h2 id="12-悲观锁">1.2 悲观锁</h2>
-<h3 id="121-一个例子">1.2.1 一个例子</h3>
+<h2 id="悲观锁">悲观锁</h2>
+<h3 id="一个例子">一个例子</h3>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 订单退款</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> orderId</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refund</span><span class="params">(Long orderId)</span> </span>&#123;</span><br><span class="line">   <span class="comment">//select * from order where id=&#123;orderId&#125;;</span></span><br><span class="line">    Order order = orderMapper.get(orderId);</span><br><span class="line">    <span class="keyword">if</span> (order.getStatus() == <span class="string">"已付款"</span>) &#123;</span><br><span class="line">        <span class="comment">//第三方退款</span></span><br><span class="line">        thirdPartyRefund();</span><br><span class="line">        order.setStatus(<span class="string">"已退款"</span>);</span><br><span class="line">        orderMapper.update(order);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>有什么问题？</p>
 <p>如果是客服给客人退款，不小心点了两次，或者退款比较慢点完又点了一次，如果退款走的是转账……</p>
@@ -273,15 +280,15 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 订单退款</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> orderId</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refund</span><span class="params">(Long orderId)</span> </span>&#123;</span><br><span class="line">   <span class="comment">//select * from order where id=&#123;orderId&#125; for update;</span></span><br><span class="line">    Order order = orderMapper.getAndLock(orderId);</span><br><span class="line">    <span class="keyword">if</span> (order.getStatus() == <span class="string">"已付款"</span>) &#123;</span><br><span class="line">        <span class="comment">//第三方退款</span></span><br><span class="line">        thirdPartyRefund();</span><br><span class="line">        order.setStatus(<span class="string">"已退款"</span>);</span><br><span class="line">        orderMapper.update(order);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>即使同一个订单退款同时出发了两次，由于X锁，第二次请求会阻塞。</p>
 <p>这就是悲观锁：假定会发生并发冲突，屏蔽一切可能违反数据完整性的操作。</p>
-<h3 id="122-使用场景">1.2.2 使用场景</h3>
+<h3 id="使用场景">使用场景</h3>
 <p>1.存在需要控制并发的场景。</p>
 <p>2.加锁的对象并发量不大。例如：对一个订单来说，并发主要来自用户对这个订单的操作，量并不大。</p>
 <p>3.加锁的范围不能太大。</p>
 <p>两方面：</p>
 <p>数据库层面：建议只对主键加锁，例如：如果我对order里的userId加锁，影响范围就比较大了。</p>
 <p>业务层面：如果订单系统由用户表（user），对用户表里的主键加锁对业务的影响。</p>
-<h2 id="13-乐观锁">1.3 乐观锁</h2>
-<h3 id="131例子">1.3.1例子</h3>
+<h2 id="乐观锁">乐观锁</h2>
+<h3 id="例子">例子</h3>
 <p>下单减库存</p>
 <p>t_stock</p>
 <p>条数 400W</p>
@@ -318,7 +325,7 @@
 <blockquote>
 <p>注意：全局修改隔离级别后需要重启应用，否则连接池里的连接还是用的修改前的隔离级别，或者直接在连接参数里修改隔离级别。</p>
 </blockquote>
-<h3 id="132-rc级别下高并发结果">1.3.2 RC级别下高并发结果</h3>
+<h3 id="rc级别下高并发结果">RC级别下高并发结果</h3>
 <p>Jmeter 1S 1000个的并发</p>
 <ol>
 <li>id主键索引</li>
@@ -340,13 +347,13 @@
 <li>id普通非唯一索引</li>
 </ol>
 <p><code>{0=31, 1=40, 2=47, 3=23, 4=28, 5=21, 6=810}</code></p>
-<h4 id="1结果">1.结果</h4>
+<h4 id="结果">结果</h4>
 <p>期望的结果更新次数在1～6之间都有分布的，RC级别下只有id和version是主键索引，或者id是非唯一的普通索引的时候才符合预期。其他情况除了一条是1次更新成功，其他都是第二次更新成功。</p>
-<h4 id="2分析">2.分析</h4>
+<h4 id="分析">分析</h4>
 <p>id主键索引/id version 联合索引 /id唯一索引的情况下，第一次循环里的<code>update t_stock set amount={stock.amount} where id={stock.id} and version = {stock.version};</code>，即使version不对也会对记录加锁，1000个请求过来，只有一个请求获取了锁并更新成功，其他锁加入等待队列；等到第一个请求更新成功，后面某个获取到锁的请求必然在第一个循环里更新失败，但并不会释放锁，第二次循环会更新成功。</p>
 <p>primary_id_version是联合主键的时候<code>update t_stock set amount={stock.amount} where id={stock.id} and version = {stock.version};</code>锁主键的时候如果version不对主键并不存在，所以不会锁记录。</p>
 <p>id是普通非唯一索引的时候<code>update t_stock set amount={stock.amount} where id={stock.id} and version = {stock.version};</code>会锁stock.id对应的记录，单发现不符合where条件里的version会立即释放锁，参考<a href="https://adamswanglin.github.io/2018/04/27/mysql-transaction/#242-rc%E7%BA%A7%E5%88%AB%E4%B8%8Bupdate-where-%E5%8A%A0%E9%94%81%E5%90%8E%E9%87%8A%E6%94%BE%E9%94%81">MySQL事务与锁-2.4.2 RC级别下update … where 加锁后释放锁</a>里的场景。</p>
-<h3 id="133rr级别下高并发结果">1.3.3RR级别下高并发结果</h3>
+<h3 id="rr级别下高并发结果">RR级别下高并发结果</h3>
 <ol>
 <li>id主键索引</li>
 </ol>
@@ -363,49 +370,53 @@
 <li>id 唯一索引</li>
 </ol>
 <p><code>{0=13, 1=0, 2=0, 3=0, 4=0, 5=0, 6=987}</code></p>
-<h4 id="1结果">1.结果</h4>
+<h4 id="结果">结果</h4>
 <p>如果第一次没有更新成功，后面就不会更新成功</p>
-<h4 id="2分析">2.分析</h4>
+<h4 id="分析">分析</h4>
 <p>RR级别下MVCC的一致读导致第一次循环如果没有更新成功，即使加了锁，第二次的快照读的结果和第一次还是一样，这样获取的version还是第一次的version，后面的更新都不会更新上。</p>
-<h3 id="134乐观锁的变体">1.3.4乐观锁的变体</h3>
+<h3 id="乐观锁的变体">乐观锁的变体</h3>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">decAmount</span><span class="params">(<span class="keyword">long</span> id)</span> </span>&#123;</span><br><span class="line">  <span class="comment">//update t_stock set amount=amount-1 where id=&#123;stock.id&#125; and amount &gt;= 1;</span></span><br><span class="line">  <span class="keyword">int</span> affectCount = stockMapper.decAmount(stock);</span><br><span class="line">  <span class="keyword">if</span> (affectCount &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">//扣减成功</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">//扣减失败</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>利用amount替换version，没有仿CAS的操作，其实也不算乐观锁了。</p>
-<h3 id="135总结">1.3.5总结</h3>
+<h3 id="总结">总结</h3>
 <p>MySQL底层用锁实现的，想实现无锁化的乐观锁并不现实，使用起来也有坑，并不推荐使用。</p>
-<h1 id="2-分布式锁">2 分布式锁</h1>
-<h2 id="21-redis实现的分布式锁">2.1 Redis实现的分布式锁</h2>
+<h1 id="分布式锁">分布式锁</h1>
+<h2 id="redis实现的分布式锁">Redis实现的分布式锁</h2>
 <p>redis中有个命令<code>setNX</code>，是一种CAS操作，不同于一般的<code>set</code>命令直接覆盖原值，<code>setNx</code>在更新的时候会判断当前<code>key</code>是否存在，如果存在返回<code>false</code>，如果不存在设置<code>value</code>并返回<code>true</code>。</p>
 <p>下面的代码利用这个CAS操作写简单的乐观锁：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取锁</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> key 锁id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 锁结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">tryLock</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">        	#setNx</span><br><span class="line">            <span class="keyword">if</span> (redisTemplate.opsForValue().setIfAbsent(key, <span class="string">""</span>)) &#123;</span><br><span class="line">               redisTemplate.expire(key, <span class="number">5000</span>, TimeUnit.MILLISECONDS);</span><br><span class="line">               <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            LOGGER.error(<span class="string">"get lock &#123;&#125; error"</span>, key, e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>上面只是简单演示基本原理，实际使用中需要考虑很多问题。如redis失效和expire失败导致锁不释放（redis 2.8版本支持setnx命令支持设置失效时长；reids是单线程，也可以用eval执行lua脚本的方式实现）。</p>
 <p>redis方案的分布式锁推荐RedissonLock，实现java.util.concurrent.Lock接口，用起来很方便；内部用redis的eval命令执行lua脚本，可以参看https://github.com/angryz/my-blog/issues/4。</p>
-<h2 id="22-使用分布式锁">2.2 使用分布式锁</h2>
+<h2 id="使用分布式锁">使用分布式锁</h2>
 <p>扣减库存的例子</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">decAmount</span><span class="params">(<span class="keyword">long</span> id)</span> </span>&#123;</span><br><span class="line">    Lock redissonLock = redissonClient.getLock(id);</span><br><span class="line">    <span class="keyword">if</span>(redissonLock.tryLock(<span class="number">1</span>, TimeUnit.SECONDS)) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//select * from t_stock where id=&#123;id&#125;</span></span><br><span class="line">            StockEntity stock = stockMapper.get(id);</span><br><span class="line">            stock.setAmount(stock.getAmount() - <span class="number">1</span>);</span><br><span class="line">            <span class="comment">//update t_stock set amount=&#123;stock.amount&#125; where id=&#123;stock.id&#125;;</span></span><br><span class="line">            stockMapper.update(stock);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="comment">//todo</span></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            redissonLock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>存在的问题：强依赖redis，如果redis挂了怎么办。</p>
 <p>修改：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">decAmount</span><span class="params">(<span class="keyword">long</span> id)</span> </span>&#123;</span><br><span class="line">    Lock redissonLock = redissonClient.getLock(id);</span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">boolean</span> lockSuccess = redissonLock.tryLock(<span class="number">1</span>, TimeUnit.SECONDS)) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//select * from t_stock where id=&#123;id&#125;</span></span><br><span class="line">            StockEntity stock = stockMapper.get(id);</span><br><span class="line">            stock.setAmount(stock.getAmount() - <span class="number">1</span>);</span><br><span class="line">            <span class="comment">//update t_stock set amount=&#123;stock.amount&#125; where id=&#123;stock.id&#125; and version = &#123;stock.version&#125;;</span></span><br><span class="line">            <span class="keyword">int</span> size = stockMapper.updateByVersion(stock);</span><br><span class="line">            <span class="keyword">boolean</span> success = size &gt; <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="comment">//todo</span></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (lockSuccess) &#123;</span><br><span class="line">                redissonLock.unlock();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="221-redis锁数据库锁双重保障的方式">2.2.1 Redis锁+数据库锁双重保障的方式</h3>
-<h3 id="222-相比只有数据库加锁的优点">2.2.2 相比只有数据库加锁的优点</h3>
+<h3 id="redis锁数据库锁双重保障的方式">Redis锁+数据库锁双重保障的方式</h3>
+<h3 id="相比只有数据库加锁的优点">相比只有数据库加锁的优点</h3>
 <p>1.redis锁生效的时候，数据库没有锁等待。</p>
 <p>2.redis失效的时候</p>
 <p>可以考虑服务降级：例如上面的乐观锁，去掉循环之后，更新一次如果失败就返回失败；</p>
 <p>或者服务不降级：用数据库锁扛着。</p>
-<h3 id="223-相比只用redis加锁的优点">2.2.3 相比只用redis加锁的优点</h3>
+<h3 id="相比只用redis加锁的优点">相比只用redis加锁的优点</h3>
 <p>不强依赖redis</p>
-<h2 id="23-使用场景">2.3 使用场景</h2>
-<h3 id="231-只想在特定的操作加锁">2.3.1 只想在特定的操作加锁</h3>
+<h2 id="使用场景">使用场景</h2>
+<h3 id="只想在特定的操作加锁">只想在特定的操作加锁</h3>
 <p>例如：同一用户每次只允许下一单，如果用数据库锁，可能会锁住用户相关的所有操作；这时候用分布式锁没有问题，因为锁对象（redis里的key值）定义很自由。用户退款可以定义为：<code>lock:user:refund:{userId}</code>,用户下单可以定义为：<code>lock:user:order:{userid}</code></p>
-<h3 id="232-锁对象的并发量很大">2.3.2 锁对象的并发量很大</h3>
+<h3 id="锁对象的并发量很大">锁对象的并发量很大</h3>
 <p>高并发的时候如果使用数据库锁，会有很长的锁等待队列，数据库连接也被占；虽然锁等待超时会抛异常，放弃等待，等待时间也很难控制。</p>
 <p>经典场景：秒杀，对单个产品对象的并发。</p>
-<h3 id="223-考虑好锁失效的场景和处理方案">2.2.3 考虑好锁失效的场景和处理方案</h3>
+<h3 id="考虑好锁失效的场景和处理方案">考虑好锁失效的场景和处理方案</h3>
 
                 
 
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/rocketmq/rocketmq-architecture/" data-toggle="tooltip" data-placement="top" title="RocketMQ总体架构">&larr; Previous Post</a>
+                        </li>
                     
                     
                         <li class="next">
@@ -434,12 +445,13 @@
             <!-- Tabe of Content -->
             <!-- Table of Contents -->
 
+
     
       <aside id="sidebar">
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#1数据库锁的使用"><span class="toc-nav-text">1.数据库锁的使用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#11-锁的副作用"><span class="toc-nav-text">1.1 锁的副作用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#111-锁等待"><span class="toc-nav-text">1.1.1 锁等待</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#112-死锁"><span class="toc-nav-text">1.1.2 死锁</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#113-减少死锁锁等待"><span class="toc-nav-text">1.1.3 减少死锁锁等待</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#12-悲观锁"><span class="toc-nav-text">1.2 悲观锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#121-一个例子"><span class="toc-nav-text">1.2.1 一个例子</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#122-使用场景"><span class="toc-nav-text">1.2.2 使用场景</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#13-乐观锁"><span class="toc-nav-text">1.3 乐观锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#131例子"><span class="toc-nav-text">1.3.1例子</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#132-rc级别下高并发结果"><span class="toc-nav-text">1.3.2 RC级别下高并发结果</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1结果"><span class="toc-nav-text">1.结果</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#2分析"><span class="toc-nav-text">2.分析</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#133rr级别下高并发结果"><span class="toc-nav-text">1.3.3RR级别下高并发结果</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1结果"><span class="toc-nav-text">1.结果</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#2分析"><span class="toc-nav-text">2.分析</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#134乐观锁的变体"><span class="toc-nav-text">1.3.4乐观锁的变体</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#135总结"><span class="toc-nav-text">1.3.5总结</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#2-分布式锁"><span class="toc-nav-text">2 分布式锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-redis实现的分布式锁"><span class="toc-nav-text">2.1 Redis实现的分布式锁</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-使用分布式锁"><span class="toc-nav-text">2.2 使用分布式锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#221-redis锁数据库锁双重保障的方式"><span class="toc-nav-text">2.2.1 Redis锁+数据库锁双重保障的方式</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#222-相比只有数据库加锁的优点"><span class="toc-nav-text">2.2.2 相比只有数据库加锁的优点</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#223-相比只用redis加锁的优点"><span class="toc-nav-text">2.2.3 相比只用redis加锁的优点</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#23-使用场景"><span class="toc-nav-text">2.3 使用场景</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#231-只想在特定的操作加锁"><span class="toc-nav-text">2.3.1 只想在特定的操作加锁</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#232-锁对象的并发量很大"><span class="toc-nav-text">2.3.2 锁对象的并发量很大</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#223-考虑好锁失效的场景和处理方案"><span class="toc-nav-text">2.2.3 考虑好锁失效的场景和处理方案</span></a></li></ol></li></ol></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#数据库锁的使用"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">数据库锁的使用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#锁的副作用"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">锁的副作用</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#锁等待"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">锁等待</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#死锁"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">死锁</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#减少死锁锁等待"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">减少死锁锁等待</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#悲观锁"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">悲观锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#一个例子"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">一个例子</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#使用场景"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">使用场景</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#乐观锁"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">乐观锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#例子"><span class="toc-nav-number">1.3.1.</span> <span class="toc-nav-text">例子</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#rc级别下高并发结果"><span class="toc-nav-number">1.3.2.</span> <span class="toc-nav-text">RC级别下高并发结果</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#结果"><span class="toc-nav-number">1.3.2.1.</span> <span class="toc-nav-text">结果</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#分析"><span class="toc-nav-number">1.3.2.2.</span> <span class="toc-nav-text">分析</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#rr级别下高并发结果"><span class="toc-nav-number">1.3.3.</span> <span class="toc-nav-text">RR级别下高并发结果</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#结果"><span class="toc-nav-number">1.3.3.1.</span> <span class="toc-nav-text">结果</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#分析"><span class="toc-nav-number">1.3.3.2.</span> <span class="toc-nav-text">分析</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#乐观锁的变体"><span class="toc-nav-number">1.3.4.</span> <span class="toc-nav-text">乐观锁的变体</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#总结"><span class="toc-nav-number">1.3.5.</span> <span class="toc-nav-text">总结</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#分布式锁"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">分布式锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#redis实现的分布式锁"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Redis实现的分布式锁</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#使用分布式锁"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">使用分布式锁</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#redis锁数据库锁双重保障的方式"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text">Redis锁+数据库锁双重保障的方式</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#相比只有数据库加锁的优点"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text">相比只有数据库加锁的优点</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#相比只用redis加锁的优点"><span class="toc-nav-number">2.2.3.</span> <span class="toc-nav-text">相比只用redis加锁的优点</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#使用场景"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">使用场景</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#只想在特定的操作加锁"><span class="toc-nav-number">2.3.1.</span> <span class="toc-nav-text">只想在特定的操作加锁</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#锁对象的并发量很大"><span class="toc-nav-number">2.3.2.</span> <span class="toc-nav-text">锁对象的并发量很大</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#考虑好锁失效的场景和处理方案"><span class="toc-nav-number">2.3.3.</span> <span class="toc-nav-text">考虑好锁失效的场景和处理方案</span></a></li></ol></li></ol></li></ol>
         
         </div>
       </aside>

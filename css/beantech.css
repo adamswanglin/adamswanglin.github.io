@@ -97,6 +97,44 @@ a img:focus {
 article {
   overflow-x: hidden;
 }
+/*WL auto num*/
+article { counter-reset: h2counter; }
+article h2 { counter-reset: h3counter; }
+article h3 { counter-reset: h4counter; }
+article h4 { counter-reset: h5counter; }
+article h5 { counter-reset: h6counter; }
+article h6 { }
+article h2:before {
+  counter-increment: h2counter;
+  content: counter(h2counter) ".\0000a0\0000a0";
+}
+article h3:before {
+  counter-increment: h3counter;
+  content: counter(h2counter) "."
+            counter(h3counter) ".\0000a0\0000a0";
+}
+article h4:before {
+  counter-increment: h4counter;
+  content: counter(h2counter) "."
+            counter(h3counter) "."
+            counter(h4counter) ".\0000a0\0000a0";
+}
+article h5:before {
+  counter-increment: h5counter;
+  content: counter(h2counter) "."
+            counter(h3counter) "."
+            counter(h4counter) "."
+            counter(h5counter) ".\0000a0\0000a0";
+}
+ article h6:before {
+  counter-increment: h6counter;
+  content: counter(h2counter) "."
+            counter(h3counter) "."
+            counter(h4counter) "."
+            counter(h5counter) "."
+            counter(h6counter) ".\0000a0\0000a0";
+}
+
 blockquote {
   color: #808080;
   font-style: italic;

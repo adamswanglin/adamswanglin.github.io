@@ -69,7 +69,7 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('/img/header_img/ai-banner.jpg') 
+            background-image: url('/img/header_img/ai-banner.png') 
             /*config*/
         
     }
@@ -85,7 +85,7 @@
     <div id="signature">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1" style="margin-left: 0px">
                 
                     <div class="site-heading">
                         <h1>Lin&#39;s Blog</h1>
@@ -137,6 +137,13 @@
                         
                         <li>
                             <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">categories</a>
                         </li>
                         
                     
@@ -201,15 +208,84 @@
 <!-- USE SIDEBAR -->
     <!-- Post Container -->
             <div class="
-                col-lg-8 col-lg-offset-1
+                col-lg-10 col-lg-offset-1
                 col-md-8 col-md-offset-1
                 col-sm-12
                 col-xs-12
                 post-container
-            ">
+            " style="margin-left:0">
             
                 <!-- Main Content -->
 
+
+<div class="post-preview">
+
+    <a href="/rocketmq/rocketmq-consumer/">
+        <h2 class="post-title">
+            RocketMQ 消费端
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            
+本文介绍RocketMQ消费者；包括消费者启动，消费消息流程和其中的要点等。
+
+关于rocketmq-client包
+RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar包里；RocketMQ的采用客户端拉的方式消费消息（PUSH也是通过客户端拉来实现的），拉取的时候要考虑负载均衡（rebalance），考虑消息至少消费一次（......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 王霖 on
+            2018-05-06
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#RocketMQ" title="RocketMQ">RocketMQ</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/rocketmq/rocketmq-architecture/">
+        <h2 class="post-title">
+            RocketMQ总体架构
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            
+本文介绍RocketMQ总体框架；包括系统构成，基本概念等。
+
+总体架构
+
+RocketMQ
+Apache RocketMQ是一款具有低延迟，高性能和可靠性，可灵活扩展的分布式消息平台。它由四部分组成：NameServer，Broker，生产者和消费者。它们中的每一个都可以在没有单点故障的情况下进行水平扩展。
+核心系统
+NameServer
+NameServer是一个轻量级的服务注册中心。......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 王霖 on
+            2018-05-06
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#RocketMQ" title="RocketMQ">RocketMQ</a>
+            
+        </div>
+    
+
+</div>
+<hr>
 
 <div class="post-preview">
 
@@ -221,10 +297,10 @@
             锁的应用-MySQL悲观锁乐观锁，基于Redis的分布式锁
         </h3>
         <div class="post-content-preview">
-            1.数据库锁的使用
-1.1 锁的副作用
-1.1.1 锁等待
-12345678910#正在执行的事务SELECT * from information_schema.INNODB_TRX;#当前出现的锁等待SELECT * from information_schema.INNODB_LOCK_WAITS;#出现锁等待的锁的详细信息SELECT * from information_schem......
+            数据库锁的使用
+锁的副作用
+锁等待
+12345678910#正在执行的事务SELECT * from information_schema.INNODB_TRX;#当前出现的锁等待SELECT * from information_schema.INNODB_LOCK_WAITS;#出现锁等待的锁的详细信息SELECT * from information_schema.INNODB_LOC......
         </div>
     </a>
     
@@ -258,12 +334,13 @@
 介绍了事务的ACID特性，MySQL各个隔离级别下的实现方式。
 
 数据库中事务
-1.1事务的ACID
-1.1.1原子性（Atomicity）
+事务的ACID
+原子性（Atomicity）
 定义：事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行
-1.1.2 一致性（Consistency）
+一致性（Consistency）
 定义：事务应确保数据库的状态从一个一致状态转变为另一个一致状态。一致状态的含义是数据库中的数据应满足完整性约束
-1.1......
+隔离性（Isolation)
+定义......
         </div>
     </a>
     
@@ -321,6 +398,10 @@
             
         
             
+            <a href="/tags/#RocketMQ" title="RocketMQ" rel="2">RocketMQ</a>
+            
+        
+            
         
     </div>
 </section>
@@ -374,6 +455,14 @@
     <ul>
       
         <li>
+          <a href="/rocketmq/rocketmq-consumer/">RocketMQ 消费端</a>
+        </li>
+      
+        <li>
+          <a href="/rocketmq/rocketmq-architecture/">RocketMQ总体架构</a>
+        </li>
+      
+        <li>
           <a href="/2018/04/28/mysql-lock/">MySQL事务与锁-2</a>
         </li>
       
@@ -383,6 +472,15 @@
       
     </ul>
   </div>
+
+        <hr>
+    
+        <!-- Categories -->
+
+    <h5>categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/RocketMQ/">RocketMQ</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><span class="category-list-count">2</span></li></ul>
+    </div>
 
         <hr>
     

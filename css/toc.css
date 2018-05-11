@@ -2,7 +2,7 @@
 .toc-article {
   position: absolute;
   border-left: rgba(88,88,88,0.1) 1px solid;
-  padding: 1em 1em 0 1em;
+  padding: 1em 5em 0 1em;
   margin-left: 1em;
 }
 .toc-title {
@@ -67,7 +67,7 @@
   color: color-theme;
 }
 .toc-nav-child {
-  margin-left: 1em;
+  margin-left: -2em;
 }
 #sidebar {
   display: inline;

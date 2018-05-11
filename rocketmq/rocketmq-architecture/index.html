@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          RocketMQ总体架构 - Lin
+        
+    </title>
+
+    <link rel="canonical" href="https://adamswanglin.github.io/rocketmq/rocketmq-architecture/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/jp.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1" style="margin-left: 0px">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#RocketMQ" title="RocketMQ">RocketMQ</a>
+                            
+                        </div>
+                        <h1>RocketMQ总体架构</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 王霖 on
+                            2018-05-06
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Lin&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-9 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="margin-left:0">
+
+                <blockquote>
+<p>本文介绍RocketMQ总体框架；包括系统构成，基本概念等。</p>
+</blockquote>
+<h2 id="总体架构">总体架构</h2>
+<p><img src="architecture.png" alt="总体架构"></p>
+<h3 id="rocketmq">RocketMQ</h3>
+<p>Apache RocketMQ是一款具有低延迟，高性能和可靠性，可灵活扩展的分布式消息平台。它由四部分组成：NameServer，Broker，生产者和消费者。它们中的每一个都可以在没有单点故障的情况下进行水平扩展。</p>
+<h3 id="核心系统">核心系统</h3>
+<h4 id="nameserver">NameServer</h4>
+<p>NameServer是一个轻量级的服务注册中心。每个NameServer节点中有全量的Broker中topic的路由信息。</p>
+<h4 id="broker">Broker</h4>
+<p>Broker负责消息存储，以topic为维度支持轻量级的队列，单机可以支撑上万队列规模，支持消息推拉模型，具备多副本容错机制（2副本或3副本）、强大的削峰填谷以及上亿级消息堆积能力，同时可严格保证消息的有序性。</p>
+<h4 id="producerclient">ProducerClient</h4>
+<p>用户部署的消息发布客户端。</p>
+<h4 id="consumerclient">ConsumerClient</h4>
+<p>用户部署的消息订阅客户端。支持push和pull模型，支持广播模式和集群模式。</p>
+<h2 id="核心概念">核心概念</h2>
+<p><img src="concept.png" alt="类图"></p>
+<h3 id="topic">Topic</h3>
+<p>topic是消息的一种分类，消息发送/接收都要指定topic。topic和生产组/消费组之间是多对多的关系。</p>
+<h3 id="queue">Queue</h3>
+<p>topic的细分。</p>
+<h3 id="tageventcode">Tag（EventCode）</h3>
+<p>每条发送的message都可以有一个tag；这样同一个topic可以按tag区分不同的业务场景。</p>
+<p>在实践上，一个业务系统使用一个topic，用不同的tag区分不同的消息。</p>
+<h3 id="consumergroup">ConsumerGroup</h3>
+<p>在集群模式下（默认），一个消息只会被同一消费组中的一个节点消费；同一消费组的多个节点均衡的消费topic。在实践上，一个应用/微服务一个消费组。</p>
+<h3 id="具体场景说明">具体场景说明</h3>
+<p><img src="loadbalance.png" alt="总体架构"></p>
+<h4 id="消息发送">消息发送</h4>
+<p>1.在Broker里配置Topic及其Queue数量</p>
+<p>例子里在BrokerA和BrokerB里对TP_ORD分别配置了3个Queue。</p>
+<p>2.订单发送主题为TP_ORD的消息</p>
+<p>集成在订单系统里的MQ Client先找到配置了TP_ORD的Broker和对应Queue，发现总共6个Queue（BrokerA，BrokerB各三个）；然后轮询的方式向这6个Queue里发送消息。</p>
+<h4 id="消息消费">消息消费</h4>
+<p><strong>1.客户端负载均衡</strong></p>
+<p>支付订阅组c_pay订阅了TP_ORD的消息；</p>
+<p>c_pay先找到配置了TP_ORD的Broker和对应Queue，发现总共6个Queue（BrokerA，BrokerB各三个）；c_pay找到订阅组c_pay总共有两个节点。</p>
+<p>c_pay对6个queue和两个节点分别排序，并将6个queue平均分配给两个节点：</p>
+<p>pay_1节点确定了自己拉取消息的queue为：BrokerA上的TP_ORD:Q1,TP_ORD:Q3和BrokerB上的TP_ORD:Q2；pay_2节点确定了自己拉取消息的queue为：BrokerA上的TP_ORD:Q2和BrokerB上的TP_ORD:Q1,TP_ORD:Q3。</p>
+<p><strong>2.拉取消息</strong></p>
+<p><strong>3.更新offset</strong></p>
+<h2 id="系统交互">系统交互</h2>
+<h3 id="交互方式">交互方式</h3>
+<p>netty的tcp自定义协议交互</p>
+<h4 id="请求内容">请求内容</h4>
+<ol>
+<li>HeadLength: 请求头长度</li>
+<li>Head：请求头</li>
+<li>Body：请求体</li>
+</ol>
+<p><img src="message.png" alt="请求构成"></p>
+<p>请求头：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Code</td>
+<td>int</td>
+<td>RequstCode预先定义的请求码</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>byte</td>
+<td>语言，0: java; 1:c++等</td>
+</tr>
+<tr>
+<td>Version</td>
+<td>short</td>
+<td>RocketMQ版本</td>
+</tr>
+<tr>
+<td>OpaQue</td>
+<td>int</td>
+<td>请求端自增，响应里返回</td>
+</tr>
+<tr>
+<td>Flag</td>
+<td>int</td>
+<td>标识位；标记是请求还是响应，请求的类型</td>
+</tr>
+<tr>
+<td>RemarkLength</td>
+<td>int</td>
+<td>备注信息长度</td>
+</tr>
+<tr>
+<td>Remark</td>
+<td>String</td>
+<td>备注信息，一般用作失败响应备注</td>
+</tr>
+<tr>
+<td>ExtLen</td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td>Ext</td>
+<td>Map&lt;String, String&gt;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="netty">netty</h4>
+<p>封装：封装了统一的RemotingServer 和RemotingClient接口，封装了同步请求，异步请求+回调。</p>
+<h3 id="交互内容">交互内容</h3>
+<p>除了生产消费外，其他交互包括：</p>
+<h4 id="client到broker">client到broker</h4>
+<table>
+<thead>
+<tr>
+<th>RequestCode</th>
+<th>时间点</th>
+<th>请求体</th>
+<th>响应体</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHECK_CLIENT_CONFIG  <br>检查客户端配置</td>
+<td>consumer初始化</td>
+<td>订阅信息</td>
+<td></td>
+<td>检查client，broker是否兼容。主要判断filter模式。</td>
+</tr>
+<tr>
+<td>GET_CONSUMER_LIST_BY_GROUP<br>查询统一消费组的consumer集合</td>
+<td>rebalance</td>
+<td>consumerGroup</td>
+<td>consumerIdList</td>
+<td></td>
+</tr>
+<tr>
+<td>HEART_BEAT<br> 心跳</td>
+<td>启动；新增注册；定时（默认30s）</td>
+<td>client信息（组名，id，消息模式：广播/集群，消费模式）等</td>
+<td>broker版本</td>
+<td>client注册信息同步给broker；如果client信息有变化（例如订阅改变/新增client节点），broker通知同组的其他client</td>
+</tr>
+<tr>
+<td>UNREGISTER_CLIENT<br>取消注册</td>
+<td>client关闭</td>
+<td>cleint信息</td>
+<td></td>
+<td>取消注册</td>
+</tr>
+</tbody>
+</table>
+<h4 id="broker到client">broker到client</h4>
+<table>
+<thead>
+<tr>
+<th>RequestCode</th>
+<th>时间点</th>
+<th>请求体</th>
+<th>响应体</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NOTIFY_CONSUMER_IDS_CHANGED<br>通知消费变化</td>
+<td>client注册信息变化</td>
+<td>消费组</td>
+<td></td>
+<td>通知client rebalance</td>
+</tr>
+<tr>
+<td>RESET_CONSUMER_CLIENT_OFFSET<br>重置消费偏移量</td>
+<td>admin/控制台修改offset</td>
+<td>topic，c_group，时间戳</td>
+<td>broker版本</td>
+<td>重新消费/跳过消费</td>
+</tr>
+</tbody>
+</table>
+<h4 id="broker到nameserver">broker到nameserver</h4>
+<table>
+<thead>
+<tr>
+<th>RequestCode</th>
+<th>时间点</th>
+<th>请求体</th>
+<th>响应体</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REGISTER_BROKER<br>broker注册</td>
+<td>创建更新topic；Broker 启动；定时30S</td>
+<td>broker集群名，broker地址，master地址，brokerId，topic配置</td>
+<td></td>
+<td>更新路由信息到naameserver</td>
+</tr>
+<tr>
+<td>UNREGISTER_BROKER<br>取消注册</td>
+<td>Broker关闭</td>
+<td>broker集群名，broker地址，master地址，brokerId</td>
+<td></td>
+<td>更新路由信息到nameserver</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h4 id="client到nameserver">client到nameserver</h4>
+<table>
+<thead>
+<tr>
+<th>RequestCode</th>
+<th>时间点</th>
+<th>请求体</th>
+<th>响应体</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET_ROUTEINTO_BY_TOPIC<br>获取topic的路由信息</td>
+<td>发送消息topic路由信息本地未找到；定时（默认30s），拉取consumer和producer的topic路由</td>
+<td>topic</td>
+<td></td>
+<td>更新路有信息到client</td>
+</tr>
+</tbody>
+</table>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/rocketmq/rocketmq-consumer/" data-toggle="tooltip" data-placement="top" title="RocketMQ 消费端">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2018/04/28/mysql-lock/" data-toggle="tooltip" data-placement="top" title="MySQL事务与锁-2">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#总体架构"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">总体架构</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#rocketmq"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">RocketMQ</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#核心系统"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">核心系统</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#nameserver"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">NameServer</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#broker"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">Broker</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#producerclient"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">ProducerClient</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#consumerclient"><span class="toc-nav-number">1.2.4.</span> <span class="toc-nav-text">ConsumerClient</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#核心概念"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">核心概念</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#topic"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">Topic</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#queue"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">Queue</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#tageventcode"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">Tag（EventCode）</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#consumergroup"><span class="toc-nav-number">2.4.</span> <span class="toc-nav-text">ConsumerGroup</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#具体场景说明"><span class="toc-nav-number">2.5.</span> <span class="toc-nav-text">具体场景说明</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#消息发送"><span class="toc-nav-number">2.5.1.</span> <span class="toc-nav-text">消息发送</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#消息消费"><span class="toc-nav-number">2.5.2.</span> <span class="toc-nav-text">消息消费</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#系统交互"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">系统交互</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#交互方式"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">交互方式</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#请求内容"><span class="toc-nav-number">3.1.1.</span> <span class="toc-nav-text">请求内容</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#netty"><span class="toc-nav-number">3.1.2.</span> <span class="toc-nav-text">netty</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#交互内容"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">交互内容</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#client到broker"><span class="toc-nav-number">3.2.1.</span> <span class="toc-nav-text">client到broker</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#broker到client"><span class="toc-nav-number">3.2.2.</span> <span class="toc-nav-text">broker到client</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#broker到nameserver"><span class="toc-nav-number">3.2.3.</span> <span class="toc-nav-text">broker到nameserver</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#client到nameserver"><span class="toc-nav-number">3.2.4.</span> <span class="toc-nav-text">client到nameserver</span></a></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#RocketMQ" title="RocketMQ">RocketMQ</a>
+                        
+                    </div>
+                </section>
+                
+
+                <hr>
+                <section>
+                    <h5>PV</h5>
+                        <span id="busuanzi_container_page_pv" >
+                          <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                </section>
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "adamswanglins-blog";
+    var disqus_identifier = "https://adamswanglin.github.io/rocketmq/rocketmq-architecture/";
+    var disqus_url = "https://adamswanglin.github.io/rocketmq/rocketmq-architecture/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: '♩'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/adamswanglin">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 王霖 2018 
+                    <br>
+                    Theme by Hux
+                    re-Ported by BeanTech 
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://adamswanglin.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '8964d50ede9f2d76b4c81ccd6a2ad801';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+<!-- 不蒜子-计数服务 -->
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://adamswanglin.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

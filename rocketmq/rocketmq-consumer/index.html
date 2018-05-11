@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.jpg">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          RocketMQ 消费端 - Lin
+        
+    </title>
+
+    <link rel="canonical" href="https://adamswanglin.github.io/rocketmq/rocketmq-consumer/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/header_img/jp.jpg')
+            /*post*/
+        
+    }
+    
+    #signature{
+        background-image: url('/img/signature/BeanTechSign-white.png');
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1" style="margin-left: 0px">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#RocketMQ" title="RocketMQ">RocketMQ</a>
+                            
+                        </div>
+                        <h1>RocketMQ 消费端</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 王霖 on
+                            2018-05-06
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Lin&#39;s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/categories/">categories</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-9 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container" style="margin-left:0">
+
+                <blockquote>
+<p>本文介绍RocketMQ消费者；包括消费者启动，消费消息流程和其中的要点等。</p>
+</blockquote>
+<h2 id="关于rocketmq-client包">关于rocketmq-client包</h2>
+<p>RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar包里；RocketMQ的采用客户端拉的方式消费消息（PUSH也是通过客户端拉来实现的），拉取的时候要考虑负载均衡（rebalance），考虑消息至少消费一次（offset管理）；等等这些导致了consumer的复杂度是client里面最高的。</p>
+<h2 id="consumer三个重要部分">Consumer三个重要部分</h2>
+<h3 id="负载均衡">负载均衡</h3>
+<h4 id="负载均衡状态">负载均衡状态</h4>
+<p><img src="clientBalance1.png" alt="负载均衡"></p>
+<p>假设上面是运行一段时间的状态，C_ORD消费组有两个节点node1和node2，订阅了topic：TP_PAY，Broker为TP_PAY建立了四个Queue，node1消费Queue1和Queue2，node2消费Queue3和Queue4。</p>
+<h4 id="rebalance过程">Rebalance过程</h4>
+<p>客户端每20s会启动rebalance，节点rebalance过程是：</p>
+<p><img src="clientBalance3.png" alt="负载均衡2"></p>
+<p>需要说明的是以上过程，各个节点都是分别进行的。</p>
+<h4 id="节点变动">节点变动</h4>
+<p>实际中节点会上下线，节点数量会发生变动，Topic配置的queue数量也可能变动（Broker配置变更或者上下线）。这时候Rebalance过程中各个消费节点消费的queue就会发生变动。</p>
+<p><img src="clientBalance4.png" alt="负载均衡3"></p>
+<p>考虑上面平衡状态下，C_ORD消费组中新增了节点node3：</p>
+<p>node3启动的时候会Rebalance，发现自己应该订阅Queue4；因为node3从没有订阅到订阅了Queue4，订阅内容有变，所以会node3立即发送心跳给Broker并且其中subVersion是当前时间戳；Broker发现心跳中的时间戳有更新会立即发送NOTIFY_CONSUMER_IDS_CHANGED的指令给node1和node2；node1和node2收到指令会立即Rebalance。只要同一个消费组的订阅信息一致，分配算法一致，最终queue会被同一消费组的节点平均分配。最终变化如下：</p>
+<p><img src="clientBalance2.png" alt="负载均衡4"></p>
+<blockquote>
+<p>负载均衡算法有：</p>
+<p>AllocateMessageQueueAveragely</p>
+<p>AllocateMessageQueueAveragelyByCircle</p>
+<p>AllocateMessageQueueConsistentHash</p>
+<p>AllocateMessageQueueByMachineRoom</p>
+<p>AllocateMessageQueueByConfig</p>
+<p>默认是AllocateMessageQueueAveragely；例如5个queue分给3个节点，5/3=1，则平均消费1个；5%3=2，头两个节点再额外加一个；最后的结果是{1,2} {3,4} {5}。</p>
+</blockquote>
+<h3 id="消息拉取">消息拉取</h3>
+<h4 id="pull-or-push">PULL OR PUSH</h4>
+<p>consumer分<code>pull consumer</code>和<code>push consumer</code>。</p>
+<ul>
+<li>pull：应用自己拉取，消息延时较大。</li>
+<li>push：发送<strong>异步拉取消息的请求</strong>给Broker；如果当时有未消费的消息Broker立即返回未消费消息，如果没有未消费的消息，Broker在有新消息的时候返回新消息。push类型的consumer实现中的<strong>异步拉取消息的请求</strong>实际也是客户端pull消息；使用这种实现方式减轻了Broker的负担（Broker通过请求就知道新消息发给谁），但也增加了客户端的复杂度（负载均衡在客户端实现）。</li>
+</ul>
+<p>我们使用的都是pushConsumer，一下只考虑pushConsumer的启动。</p>
+<h4 id="broadcasting-or-clustering">BROADCASTING OR CLUSTERING</h4>
+<p>consumer的消费模型分为<code>BROADCASTING</code>（广播模式）和<code>CLUSTERING</code>（集群模式）。</p>
+<ul>
+<li>
+<p>广播模式：对于某一条消息，同一消费组里每个节点都会收到。</p>
+</li>
+<li>
+<p>集群模式：对于某一条消息，同一消费组里只会有一个节点收到。</p>
+</li>
+</ul>
+<blockquote>
+<p>广播模式和集群模式只针对单个消费组；不同消费组之间的消息订阅是互不影响的。</p>
+</blockquote>
+<h3 id="offset管理">Offset管理</h3>
+<p>为了确定消息是否到达，现有消息队列实现里都有ack机制。</p>
+<p>例如在ActiveMQ里，一条消息从producer端发出之后，一旦被consumer消费，consumer会返回ACK，broker端会删除这条已消费的消息。这样每一条消息消费都要传送一个ACK消息，Broker端也要根据ACK做相应操作。</p>
+<p>RocketMQ用Offset机制来实现ACK，它类似一种批量的ACK：</p>
+<ul>
+<li>
+<p>在Broker端，消息的Offset是递增的；</p>
+</li>
+<li>
+<p>Client端拉取的时候也是按顺序拉取的，比如第一次拉取offset 0开始的消息，拉取了10条，第二次就从上次最后一个节点offset+1的位置拉取；</p>
+</li>
+<li>
+<p>Client消费一批消息后将消费完成的Offset发送给Broker。</p>
+</li>
+</ul>
+<p>RocketMQ这样做之后提升了效率：Offset更新频率相比单条更新小，Broker端只用存储某个消费组对某个Queue的消费进度而不用在每个消息上存某个消费组是否消费了该消息。</p>
+<p>但同时也带来了一个问题：更大几率的重复消费。消费组消费了offset =2到offset=10的消息，但是offset=1的消息消费的比较慢；如果更新offset=10可能会导致offset=1的消息未成功消费Broker却认为成功，所以RocketMQ的做法是消费端更新的Offset都是未消费消息的最小offset；如果这时候消费端down机，别的消费组消费的时候会从offset=1的消息开始拉取消费，这样offset=2和offset=10的消息就会重复消费。所以RocketMQ不保证消息不重复，当然这只是造成消息重复消费的一个原因。</p>
+<h2 id="consumer启动">Consumer启动</h2>
+<h3 id="几个重要的类关系">几个重要的类关系</h3>
+<p><img src="clientRel.png" alt="类关系"></p>
+<h4 id="pullmessageservice">PullMessageService</h4>
+<p>启动拉取消息线程类</p>
+<h4 id="rebalanceservice">RebalanceService</h4>
+<p>启动定时任务Rebalance类</p>
+<h4 id="mqclientinstance">MQClientInstance</h4>
+<p>一般一个应用一个</p>
+<h4 id="defaultmqpushconsumerimpl">DefaultMQPushConsumerImpl</h4>
+<p>一个consumerGroup一个，和MQClientInstance是多对一关系</p>
+<h4 id="rebalanceimpl">RebalanceImpl</h4>
+<p>和pull/push模式有关，所以具体的rebalance实现挂在DefaultMQPushConsumerImpl下面。</p>
+<h3 id="启动详细流程">启动详细流程</h3>
+<h4 id="启动defaultmqpushconsumerimpl">启动DefaultMQPushConsumerImpl</h4>
+<p><img src="clientStart.png" alt="启动流程"></p>
+<h4 id="获取创建mqclientinstance">获取/创建MQClientInstance</h4>
+<p>MQClientInstance和clientId一一对应，一般一个应用只会有MQClientInstance，规则是{ip}:{pid}。</p>
+<h5 id="创建mqclientapi">创建MQClientAPI</h5>
+<p>封装了远程调用Broker和NameServer的API。包括推送消息，拉取消息，在Broker上创建消费组等。</p>
+<h5 id="创建pullmessageservice">创建PullMessageService</h5>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PullMessageService</span> <span class="keyword">extends</span> <span class="title">ServiceThread</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (!<span class="keyword">this</span>.isStopped()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                PullRequest pullRequest = <span class="keyword">this</span>.pullRequestQueue.take();</span><br><span class="line">                <span class="keyword">if</span> (pullRequest != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">this</span>.pullMessage(pullRequest);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                log.error(<span class="string">"Pull Message Service Run Method exception"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中ServiceThread是对线程的封装，RocketMQ中很多XXService类都继承自ServiceThread。</p>
+<p>ServiceTask实现程序开启，停止，等待特定时长执行，中途任意时间唤醒等。</p>
+<p>截取部分代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ServiceThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">	<span class="keyword">protected</span> <span class="keyword">final</span> Thread thread;</span><br><span class="line">  	<span class="comment">//和juc CountDownLatch 区别 增加了 reset方法</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">final</span> CountDownLatch2 waitPoint = <span class="keyword">new</span> CountDownLatch2(<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">volatile</span> AtomicBoolean hasNotified = <span class="keyword">new</span> AtomicBoolean(<span class="keyword">false</span>);</span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.thread.start();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//线程等待代码</span></span><br><span class="line">  	<span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">waitForRunning</span><span class="params">(<span class="keyword">long</span> interval)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (hasNotified.compareAndSet(<span class="keyword">true</span>, <span class="keyword">false</span>)) &#123;</span><br><span class="line">            <span class="keyword">this</span>.onWaitEnd();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//entry to wait</span></span><br><span class="line">        waitPoint.reset();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            waitPoint.await(interval, TimeUnit.MILLISECONDS);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            log.error(<span class="string">"Interrupted"</span>, e);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            hasNotified.set(<span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">this</span>.onWaitEnd();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="comment">//线程中途唤醒代码</span></span><br><span class="line">  	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">wakeup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (hasNotified.compareAndSet(<span class="keyword">false</span>, <span class="keyword">true</span>)) &#123;</span><br><span class="line">            waitPoint.countDown(); <span class="comment">// notify</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>能看到PullMessageService的作用是启动一个线程，不停的从queue里拉取请求并执行pullMessage方法。</p>
+<h5 id="创建rebalanceservice">创建RebalanceService</h5>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RebalanceService</span> <span class="keyword">extends</span> <span class="title">ServiceThread</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (!<span class="keyword">this</span>.isStopped()) &#123;</span><br><span class="line">            <span class="keyword">this</span>.waitForRunning(waitInterval);</span><br><span class="line">            <span class="keyword">this</span>.mqClientFactory.doRebalance();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RebalanceService的作用就是启动一个线程，定时调用doRebalance方法。</p>
+<h4 id="创建pullapiwrapper">创建PullApiWrapper</h4>
+<p>拉取消息请求和响应的wrapper；主要作用：请求的时候封装RPC请求体，响应的时候二次过滤tag。</p>
+<blockquote>
+<p>说二次过滤是因为Broker会过滤一次tag，但是为了效率broker过滤tag是按存放的tag的hashCode做比较的，不保证tag字符串一致。</p>
+<p>PullApiWrapper做二次过滤保证获取的的tag和订阅的tag字符串匹配。</p>
+</blockquote>
+<h4 id="启动consumemessageconcurrentlyservice">启动ConsumeMessageConcurrentlyService</h4>
+<p>消息消费处理类，这里是并发处理消息；对应的还有ConsumeMessageOrderlyService，顺序处理消息类。</p>
+<p>除了处理下消息外，还负责启动线程定时清除消费开始15分钟还未处理完成的消息（发送回Broker重试）。</p>
+<h4 id="启动mqclientinstance">启动MQClientInstance</h4>
+<p>启动netty客户端；启动拉取消息服务；启动rebalance服务；启动定时任务：定时向Broker发送心跳，定时拉取路由信息，定时发送offset到Broker，定时调整消费线程池大小。</p>
+<h4 id="registerconsumer">registerConsumer</h4>
+<p>DefaultMQPushConsumerImpl是一个consumerGroup一个实例，MQClientInstance一个应用一个实例；两者一对多，注册指DefaultMQPushConsumerImpl放入MQClientInstance中的ConcurrentMap&lt;String/* group */, MQConsumerInner&gt;中。</p>
+<h4 id="updatetopicrouteinfofromnameserver">updateTopicRouteInfoFromNameServer</h4>
+<p>立即更新一次订阅的topic的路由信息。</p>
+<h4 id="checkclientinbroker">checkClientInBroker</h4>
+<p>随机选择一个Broker，发送检查客户端配置配置的请求。</p>
+<h4 id="sendheartbeattoallbrokerwithlock">sendHeartbeatToAllBrokerWithLock</h4>
+<p>立即向所有相关Broker（订阅的topic的路由到的Broker）的master节点发送心跳。</p>
+<h4 id="rebalanceimmediately">rebalanceImmediately</h4>
+<p>立即执行一次rebalance。</p>
+<h2 id="pushconsumerrebalance">PushConsumerRebalance</h2>
+<h2 id="consumer拉取消息">Consumer拉取消息</h2>
+<h3 id="拉取消息的流程示意">拉取消息的流程示意</h3>
+<p><img src="clientPullPrd.png" alt="拉取"></p>
+<blockquote>
+<p>图中小人代表有特定线程处理任务；黄色箭头代表PullRequest的流向。</p>
+</blockquote>
+<h4 id="rebalanceservice初始化pullrequest">RebalanceService初始化PullRequest</h4>
+<h5 id="client启动">client启动</h5>
+<p>RebalanceService确定consumer拉取的queue。</p>
+<ul>
+<li>为需要拉取的queue生成一个ProcessQueue用来保存正在/等待处理的信息，放入processQueueTable中。</li>
+<li>为需要拉取的queue生成一个PullRequest，放入PullRequestQueue中；其中，拉取消息的位置从nextOffset从Broker远程拉取。</li>
+</ul>
+<h5 id="定时rebalance">定时Rebalance</h5>
+<ul>
+<li>如果发现有新订阅的queue，也会为每个新增订阅的queue生成一个PullRequest，放入PullRequestQueue中；其中，拉取消息的位置从nextOffset从Broker远程拉取。</li>
+<li>如果发现有queue已经不订阅了，更新offset到Broker，将ProcessQueue设为dropped并从processQueueTable中移除。</li>
+</ul>
+<h4 id="pullmessageservice取出pullrequest">PullMessageService取出PullRequest</h4>
+<p>PullMessageService启动一个线程不停的从PullRequestQueue里取出PullRequest。如果取出的PullRequest是已失效的（ProcessQueue是否dropped），丢弃；如果未失效，执行下面步骤。</p>
+<h4 id="pullmessageservice发送异步请求">PullMessageService发送异步请求</h4>
+<p>PullMessageService取出PullRequest后，根据其中的queue定位Broker，并发送异步拉取请求。同时将PullRequest封装在PullCallback里，PullCallback封装在ResponseFuture里；并以自增的请求id为键，ResponseFuture为值放入ResponseTable中。</p>
+<h4 id="broker发送异步响应">Broker发送异步响应</h4>
+<p>Broker收到请求，如果offset之后有新的消息会立即发送异步响应；否则等待直到producer有新的消息发送后返回或者超时。</p>
+<p>如果通信异常或者Broker超时未返回响应，nettyClient会定时清理超时的请求，释放PullRequest回到PullRequestQueue。</p>
+<h4 id="nettyclient处理响应">NettyClient处理响应</h4>
+<p>根据响应id从ResponseTable中取出ResponseFuture；从响应里取出最新的offset和批量拉取到的消息。</p>
+<p>用最新的offset更新ResponseFuture里的PullRequest并推送给PullRequestQueue里以进行下一次拉取。</p>
+<p>批量拉取到的消息分批推给consumeExecutor线程处理。</p>
+<h3 id="拉取消息的详细流程">拉取消息的详细流程</h3>
+<p><img src="clientPull.png" alt="消费流程"></p>
+<h3 id="几点说明">几点说明</h3>
+<ul>
+<li>
+<p>拉取到的消息分批用consumerExecutor线程池执行，如果线程池满了5s后重试。</p>
+</li>
+<li>
+<p>每批消息里消费失败的消息会重发给broker的重试队列，重发也失败的消息5s后用consumerExecutor重新消费。</p>
+</li>
+<li>
+<p>每批消费完成后更新offset到Broker。</p>
+</li>
+<li>
+<p>异步收到消息后，消息会分queue放到ProcessQueue中，ProcessQueue里的msgTreeMap：TreeMap&lt;Long/<em>offset</em>/, MessageExt&gt;存放消息；收到的消息处理成功或者处理失败已发回重试会从treemap里移除。几点需要注意：</p>
+<p>1.每次更新offset到Broker都是从treemap里取第一条（最小offset），某条消息消费超时会导致Broker的offset无法更新；当某条消费超过15分钟还未消费完成，会发回Broker尝试重试。</p>
+<p>2.treemap里堆积的消息超过1000（可配）条或者最小最大offset相差超过2000（可配）会触发控流，延迟拉取消息。</p>
+</li>
+<li>
+<p>关于消息重复：</p>
+<p>RocketMQ不保证消息不重复，如果你的业务需要保证严格的不重复消息，需要你自己在业务端去重。</p>
+</li>
+<li>
+<p>关于消息消费顺序：</p>
+<p>RocketMQ有严格顺序消费的实现。但是有序消费会影响消息并行处理效率，消费端吞吐量下降；而且单条消息阻塞会阻塞这个消费端；所以我们并没有使用消息顺序消费。</p>
+</li>
+</ul>
+<h2 id="consumer关闭">Consumer关闭</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DefaultMQPushConsumerImpl - shutdown</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">shutdown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (<span class="keyword">this</span>.serviceState) &#123;</span><br><span class="line">    <span class="keyword">case</span> CREATE_JUST:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> RUNNING:</span><br><span class="line">      <span class="comment">//关闭消息消费线程池</span></span><br><span class="line">      <span class="keyword">this</span>.consumeMessageService.shutdown();</span><br><span class="line">      <span class="comment">//消费进度同步到Broker</span></span><br><span class="line">      <span class="keyword">this</span>.persistConsumerOffset();</span><br><span class="line"><span class="comment">//在Broker里取消注册</span></span><br><span class="line">      <span class="keyword">this</span>.mQClientFactory.unregisterConsumer(<span class="keyword">this</span>.defaultMQPushConsumer.getConsumerGroup());</span><br><span class="line">      <span class="keyword">this</span>.mQClientFactory.shutdown();</span><br><span class="line">      log.info(<span class="string">"the consumer [&#123;&#125;] shutdown OK"</span>, <span class="keyword">this</span>.defaultMQPushConsumer.getConsumerGroup());</span><br><span class="line">      <span class="comment">//关闭ProcessQueue</span></span><br><span class="line">      <span class="keyword">this</span>.rebalanceImpl.destroy();</span><br><span class="line">      <span class="keyword">this</span>.serviceState = ServiceState.SHUTDOWN_ALREADY;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> SHUTDOWN_ALREADY:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">  <span class="keyword">switch</span> (<span class="keyword">this</span>.serviceState) &#123;</span><br><span class="line">    <span class="keyword">case</span> CREATE_JUST:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> RUNNING:</span><br><span class="line">      <span class="comment">//关闭生产者</span></span><br><span class="line">      <span class="keyword">this</span>.defaultMQProducer.getDefaultMQProducerImpl().shutdown(<span class="keyword">false</span>);</span><br><span class="line">      <span class="keyword">this</span>.serviceState = ServiceState.SHUTDOWN_ALREADY;</span><br><span class="line">      <span class="comment">//关闭拉取消息线程</span></span><br><span class="line">      <span class="keyword">this</span>.pullMessageService.shutdown(<span class="keyword">true</span>);</span><br><span class="line">      <span class="comment">//关闭定时任务--heartbeat updateRouteInfo persistAllConsumerOffset等</span></span><br><span class="line">      <span class="keyword">this</span>.scheduledExecutorService.shutdown();</span><br><span class="line">      <span class="comment">//关闭netty服务</span></span><br><span class="line">      <span class="keyword">this</span>.mQClientAPIImpl.shutdown();</span><br><span class="line">      <span class="comment">//关闭rebalance线程</span></span><br><span class="line">      <span class="keyword">this</span>.rebalanceService.shutdown();</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">this</span>.datagramSocket != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.datagramSocket.close();</span><br><span class="line">        <span class="keyword">this</span>.datagramSocket = <span class="keyword">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      MQClientManager.getInstance().removeClientFactory(<span class="keyword">this</span>.clientId);</span><br><span class="line">      log.info(<span class="string">"the client factory [&#123;&#125;] shutdown OK"</span>, <span class="keyword">this</span>.clientId);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> SHUTDOWN_ALREADY:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+                
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/rocketmq/rocketmq-architecture/" data-toggle="tooltip" data-placement="top" title="RocketMQ总体架构">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                
+                <!-- disqus comment end -->
+            </div>
+            
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#关于rocketmq-client包"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">关于rocketmq-client包</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#consumer三个重要部分"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Consumer三个重要部分</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#负载均衡"><span class="toc-nav-number">2.1.</span> <span class="toc-nav-text">负载均衡</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#负载均衡状态"><span class="toc-nav-number">2.1.1.</span> <span class="toc-nav-text">负载均衡状态</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#rebalance过程"><span class="toc-nav-number">2.1.2.</span> <span class="toc-nav-text">Rebalance过程</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#节点变动"><span class="toc-nav-number">2.1.3.</span> <span class="toc-nav-text">节点变动</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#消息拉取"><span class="toc-nav-number">2.2.</span> <span class="toc-nav-text">消息拉取</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#pull-or-push"><span class="toc-nav-number">2.2.1.</span> <span class="toc-nav-text">PULL OR PUSH</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#broadcasting-or-clustering"><span class="toc-nav-number">2.2.2.</span> <span class="toc-nav-text">BROADCASTING OR CLUSTERING</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#offset管理"><span class="toc-nav-number">2.3.</span> <span class="toc-nav-text">Offset管理</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#consumer启动"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Consumer启动</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#几个重要的类关系"><span class="toc-nav-number">3.1.</span> <span class="toc-nav-text">几个重要的类关系</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#pullmessageservice"><span class="toc-nav-number">3.1.1.</span> <span class="toc-nav-text">PullMessageService</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#rebalanceservice"><span class="toc-nav-number">3.1.2.</span> <span class="toc-nav-text">RebalanceService</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#mqclientinstance"><span class="toc-nav-number">3.1.3.</span> <span class="toc-nav-text">MQClientInstance</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#defaultmqpushconsumerimpl"><span class="toc-nav-number">3.1.4.</span> <span class="toc-nav-text">DefaultMQPushConsumerImpl</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#rebalanceimpl"><span class="toc-nav-number">3.1.5.</span> <span class="toc-nav-text">RebalanceImpl</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#启动详细流程"><span class="toc-nav-number">3.2.</span> <span class="toc-nav-text">启动详细流程</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#启动defaultmqpushconsumerimpl"><span class="toc-nav-number">3.2.1.</span> <span class="toc-nav-text">启动DefaultMQPushConsumerImpl</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#获取创建mqclientinstance"><span class="toc-nav-number">3.2.2.</span> <span class="toc-nav-text">获取/创建MQClientInstance</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#创建mqclientapi"><span class="toc-nav-number">3.2.2.1.</span> <span class="toc-nav-text">创建MQClientAPI</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#创建pullmessageservice"><span class="toc-nav-number">3.2.2.2.</span> <span class="toc-nav-text">创建PullMessageService</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#创建rebalanceservice"><span class="toc-nav-number">3.2.2.3.</span> <span class="toc-nav-text">创建RebalanceService</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#创建pullapiwrapper"><span class="toc-nav-number">3.2.3.</span> <span class="toc-nav-text">创建PullApiWrapper</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#启动consumemessageconcurrentlyservice"><span class="toc-nav-number">3.2.4.</span> <span class="toc-nav-text">启动ConsumeMessageConcurrentlyService</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#启动mqclientinstance"><span class="toc-nav-number">3.2.5.</span> <span class="toc-nav-text">启动MQClientInstance</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#registerconsumer"><span class="toc-nav-number">3.2.6.</span> <span class="toc-nav-text">registerConsumer</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#updatetopicrouteinfofromnameserver"><span class="toc-nav-number">3.2.7.</span> <span class="toc-nav-text">updateTopicRouteInfoFromNameServer</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#checkclientinbroker"><span class="toc-nav-number">3.2.8.</span> <span class="toc-nav-text">checkClientInBroker</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#sendheartbeattoallbrokerwithlock"><span class="toc-nav-number">3.2.9.</span> <span class="toc-nav-text">sendHeartbeatToAllBrokerWithLock</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#rebalanceimmediately"><span class="toc-nav-number">3.2.10.</span> <span class="toc-nav-text">rebalanceImmediately</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#pushconsumerrebalance"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">PushConsumerRebalance</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#consumer拉取消息"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Consumer拉取消息</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#拉取消息的流程示意"><span class="toc-nav-number">5.1.</span> <span class="toc-nav-text">拉取消息的流程示意</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#rebalanceservice初始化pullrequest"><span class="toc-nav-number">5.1.1.</span> <span class="toc-nav-text">RebalanceService初始化PullRequest</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#client启动"><span class="toc-nav-number">5.1.1.1.</span> <span class="toc-nav-text">client启动</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#定时rebalance"><span class="toc-nav-number">5.1.1.2.</span> <span class="toc-nav-text">定时Rebalance</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#pullmessageservice取出pullrequest"><span class="toc-nav-number">5.1.2.</span> <span class="toc-nav-text">PullMessageService取出PullRequest</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#pullmessageservice发送异步请求"><span class="toc-nav-number">5.1.3.</span> <span class="toc-nav-text">PullMessageService发送异步请求</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#broker发送异步响应"><span class="toc-nav-number">5.1.4.</span> <span class="toc-nav-text">Broker发送异步响应</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#nettyclient处理响应"><span class="toc-nav-number">5.1.5.</span> <span class="toc-nav-text">NettyClient处理响应</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#拉取消息的详细流程"><span class="toc-nav-number">5.2.</span> <span class="toc-nav-text">拉取消息的详细流程</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#几点说明"><span class="toc-nav-number">5.3.</span> <span class="toc-nav-text">几点说明</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#consumer关闭"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Consumer关闭</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+                
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#RocketMQ" title="RocketMQ">RocketMQ</a>
+                        
+                    </div>
+                </section>
+                
+
+                <hr>
+                <section>
+                    <h5>PV</h5>
+                        <span id="busuanzi_container_page_pv" >
+                          <span id="busuanzi_value_page_pv"></span>
+                        </span>
+                </section>
+
+                <!-- Friends Blog -->
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus embedded js code start (one page only need to embed once) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "adamswanglins-blog";
+    var disqus_identifier = "https://adamswanglin.github.io/rocketmq/rocketmq-consumer/";
+    var disqus_url = "https://adamswanglin.github.io/rocketmq/rocketmq-consumer/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus embedded js code start end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'left',
+          icon: '♩'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/adamswanglin">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 王霖 2018 
+                    <br>
+                    Theme by Hux
+                    re-Ported by BeanTech 
+                    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("https://adamswanglin.github.io/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '8964d50ede9f2d76b4c81ccd6a2ad801';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+<!-- 不蒜子-计数服务 -->
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="https://adamswanglin.github.io/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
