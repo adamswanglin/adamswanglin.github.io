@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="baidu-site-verification" content="W6VQ3LfdpS" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="keyword"  content="">
@@ -136,14 +137,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -220,19 +221,24 @@
 
 <div class="post-preview">
 
-    <a href="/rocketmq/rocketmq-consumer/">
+    <a href="/rocketmq/rocketmq-architecture/">
         <h2 class="post-title">
-            RocketMQ 消费端
+            RocketMQ总体架构
         </h2>
         <h3 class="post-subtitle">
             
         </h3>
         <div class="post-content-preview">
             
-本文介绍RocketMQ消费者；包括消费者启动，消费消息流程和其中的要点等。
+本文介绍RocketMQ总体框架；包括系统构成，基本概念等。
 
-关于rocketmq-client包
-RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar包里；RocketMQ的采用客户端拉的方式消费消息（PUSH也是通过客户端拉来实现的），拉取的时候要考虑负载均衡（rebalance），考虑消息至少消费一次（......
+总体架构
+
+RocketMQ
+Apache RocketMQ是一款具有低延迟，高性能和可靠性，可灵活扩展的分布式消息平台。它由四部分组成：NameServer，Broker，生产者和消费者。它们中的每一个都可以在没有单点故障的情况下进行水平扩展。
+核心系统
+NameServer
+NameServer是一个轻量级的服务注册中心。......
         </div>
     </a>
     
@@ -252,24 +258,19 @@ RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar�
 
 <div class="post-preview">
 
-    <a href="/rocketmq/rocketmq-architecture/">
+    <a href="/rocketmq/rocketmq-consumer/">
         <h2 class="post-title">
-            RocketMQ总体架构
+            RocketMQ 消费端
         </h2>
         <h3 class="post-subtitle">
             
         </h3>
         <div class="post-content-preview">
             
-本文介绍RocketMQ总体框架；包括系统构成，基本概念等。
+本文介绍RocketMQ消费者；包括消费者启动，消费消息流程和其中的要点等。
 
-总体架构
-
-RocketMQ
-Apache RocketMQ是一款具有低延迟，高性能和可靠性，可灵活扩展的分布式消息平台。它由四部分组成：NameServer，Broker，生产者和消费者。它们中的每一个都可以在没有单点故障的情况下进行水平扩展。
-核心系统
-NameServer
-NameServer是一个轻量级的服务注册中心。......
+关于rocketmq-client包
+RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar包里；RocketMQ的采用客户端拉的方式消费消息（PUSH也是通过客户端拉来实现的），拉取的时候要考虑负载均衡（rebalance），考虑消息至少消费一次（......
         </div>
     </a>
     
@@ -466,11 +467,11 @@ NameServer是一个轻量级的服务注册中心。......
     <ul>
       
         <li>
-          <a href="/rocketmq/rocketmq-consumer/">RocketMQ 消费端</a>
+          <a href="/rocketmq/rocketmq-architecture/">RocketMQ总体架构</a>
         </li>
       
         <li>
-          <a href="/rocketmq/rocketmq-architecture/">RocketMQ总体架构</a>
+          <a href="/rocketmq/rocketmq-consumer/">RocketMQ 消费端</a>
         </li>
       
         <li>
