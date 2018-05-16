@@ -137,14 +137,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -221,24 +221,19 @@
 
 <div class="post-preview">
 
-    <a href="/rocketmq/rocketmq-architecture/">
+    <a href="/rocketmq/rocketmq-consumer/">
         <h2 class="post-title">
-            RocketMQ总体架构
+            RocketMQ 消费端
         </h2>
         <h3 class="post-subtitle">
             
         </h3>
         <div class="post-content-preview">
             
-本文介绍RocketMQ总体框架；包括系统构成，基本概念等。
+本文介绍RocketMQ消费者；包括消费者启动，消费消息流程和其中的要点等。
 
-总体架构
-
-RocketMQ
-Apache RocketMQ是一款具有低延迟，高性能和可靠性，可灵活扩展的分布式消息平台。它由四部分组成：NameServer，Broker，生产者和消费者。它们中的每一个都可以在没有单点故障的情况下进行水平扩展。
-核心系统
-NameServer
-NameServer是一个轻量级的服务注册中心。......
+关于rocketmq-client包
+RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar包里；RocketMQ的采用客户端拉的方式消费消息（PUSH也是通过客户端拉来实现的），拉取的时候要考虑负载均衡（rebalance），考虑消息至少消费一次（......
         </div>
     </a>
     
@@ -258,19 +253,24 @@ NameServer是一个轻量级的服务注册中心。......
 
 <div class="post-preview">
 
-    <a href="/rocketmq/rocketmq-consumer/">
+    <a href="/rocketmq/rocketmq-architecture/">
         <h2 class="post-title">
-            RocketMQ 消费端
+            RocketMQ总体架构
         </h2>
         <h3 class="post-subtitle">
             
         </h3>
         <div class="post-content-preview">
             
-本文介绍RocketMQ消费者；包括消费者启动，消费消息流程和其中的要点等。
+本文介绍RocketMQ总体框架；包括系统构成，基本概念等。
 
-关于rocketmq-client包
-RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar包里；RocketMQ的采用客户端拉的方式消费消息（PUSH也是通过客户端拉来实现的），拉取的时候要考虑负载均衡（rebalance），考虑消息至少消费一次（......
+总体架构
+
+RocketMQ
+Apache RocketMQ是一款具有低延迟，高性能和可靠性，可灵活扩展的分布式消息平台。它由四部分组成：NameServer，Broker，生产者和消费者。它们中的每一个都可以在没有单点故障的情况下进行水平扩展。
+核心系统
+NameServer
+NameServer是一个轻量级的服务注册中心。......
         </div>
     </a>
     
@@ -361,6 +361,39 @@ RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar�
 </div>
 <hr>
 
+<div class="post-preview">
+
+    <a href="/wllock/">
+        <h2 class="post-title">
+            WL Lock
+        </h2>
+        <h3 class="post-subtitle">
+            一种本地锁+分布式锁的实现
+        </h3>
+        <div class="post-content-preview">
+            
+本文介绍了一种本地锁+分布式锁的实现，项目地址：https://github.com/adamswanglin/wllock
+
+分布式锁相关
+考虑分布式商品秒杀系统，库存量较少的商品，如何保证商品数量不超卖？
+其实需要保证这种一致性：某个人点击秒杀后系统中查出来的库存量和实际扣减库存时库存量的一致性就可以。Java中有synchronize关键字，可以保证这种一致性，但这种一致性是单JVM......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 王霖 on
+            2017-04-03
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#分布式锁" title="分布式锁">分布式锁</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
 
 
 <!-- Pager -->
@@ -397,11 +430,13 @@ RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar�
             
         
             
-        
+            <a href="/tags/#分布式锁" title="分布式锁" rel="2">分布式锁</a>
             
         
             
             <a href="/tags/#RocketMQ" title="RocketMQ" rel="2">RocketMQ</a>
+            
+        
             
         
     </div>
@@ -467,11 +502,11 @@ RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar�
     <ul>
       
         <li>
-          <a href="/rocketmq/rocketmq-architecture/">RocketMQ总体架构</a>
+          <a href="/rocketmq/rocketmq-consumer/">RocketMQ 消费端</a>
         </li>
       
         <li>
-          <a href="/rocketmq/rocketmq-consumer/">RocketMQ 消费端</a>
+          <a href="/rocketmq/rocketmq-architecture/">RocketMQ总体架构</a>
         </li>
       
         <li>
@@ -480,6 +515,10 @@ RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar�
       
         <li>
           <a href="/2018/04/27/mysql-transaction/">MySQL事务与锁-1</a>
+        </li>
+      
+        <li>
+          <a href="/wllock/">WL Lock</a>
         </li>
       
     </ul>
@@ -496,6 +535,8 @@ RocketMQ将producer，consumer和admin相关代码都放到rocketmq-client jar�
             <a href="/categories/#数据库" title="数据库" rel="2">数据库</a>
         
             <a href="/categories/#RocketMQ" title="RocketMQ" rel="2">RocketMQ</a>
+        
+            <a href="/categories/#分布式锁" title="分布式锁" rel="1">分布式锁</a>
         
     </div>
 </section>
