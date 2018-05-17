@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type="text/xsl" href="sitemap.xsl"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://adamswanglin.github.io</loc>
+        <loc>https://adamswanglin.com</loc>
         <changefreq>daily</changefreq>
         <priority>1</priority>
     </url>
 
     <url>
-        <loc>https://adamswanglin.github.io/wllock/</loc>
+        <loc>https://adamswanglin.com/wllock/</loc>
         <lastmod>2018-05-16T06:09:31.821Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -15,7 +15,7 @@
     </url>
 
     <url>
-        <loc>https://adamswanglin.github.io/rocketmq/rocketmq-consumer/</loc>
+        <loc>https://adamswanglin.com/rocketmq/rocketmq-consumer/</loc>
         <lastmod>2018-05-11T05:27:07.401Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -23,7 +23,7 @@
     </url>
 
     <url>
-        <loc>https://adamswanglin.github.io/rocketmq/rocketmq-architecture/</loc>
+        <loc>https://adamswanglin.com/rocketmq/rocketmq-architecture/</loc>
         <lastmod>2018-05-11T05:09:42.006Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -31,7 +31,7 @@
     </url>
 
     <url>
-        <loc>https://adamswanglin.github.io/2018/04/28/mysql-lock/</loc>
+        <loc>https://adamswanglin.com/2018/04/28/mysql-lock/</loc>
         <lastmod>2018-05-11T04:45:13.669Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
@@ -39,7 +39,7 @@
     </url>
 
     <url>
-        <loc>https://adamswanglin.github.io/2018/04/27/mysql-transaction/</loc>
+        <loc>https://adamswanglin.com/2018/04/27/mysql-transaction/</loc>
         <lastmod>2018-05-11T04:44:26.888Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>

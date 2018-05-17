@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
-    <meta name="baidu-site-verification" content="wc8bZZKh3k" />
+    <meta name="baidu-site-verification" content="pJVe4XaaJi" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="keyword"  content="">
@@ -19,7 +19,7 @@
         
     </title>
 
-    <link rel="canonical" href="https://adamswanglin.github.io/2018/04/28/mysql-lock/">
+    <link rel="canonical" href="https://adamswanglin.com/2018/04/28/mysql-lock/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -147,7 +147,7 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -161,7 +161,7 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -353,7 +353,7 @@
 <h4 id="分析">分析</h4>
 <p>id主键索引/id version 联合索引 /id唯一索引的情况下，第一次循环里的<code>update t_stock set amount={stock.amount} where id={stock.id} and version = {stock.version};</code>，即使version不对也会对记录加锁，1000个请求过来，只有一个请求获取了锁并更新成功，其他锁加入等待队列；等到第一个请求更新成功，后面某个获取到锁的请求必然在第一个循环里更新失败，但并不会释放锁，第二次循环会更新成功。</p>
 <p>primary_id_version是联合主键的时候<code>update t_stock set amount={stock.amount} where id={stock.id} and version = {stock.version};</code>锁主键的时候如果version不对主键并不存在，所以不会锁记录。</p>
-<p>id是普通非唯一索引的时候<code>update t_stock set amount={stock.amount} where id={stock.id} and version = {stock.version};</code>会锁stock.id对应的记录，单发现不符合where条件里的version会立即释放锁，参考<a href="https://adamswanglin.github.io/2018/04/27/mysql-transaction/#242-rc%E7%BA%A7%E5%88%AB%E4%B8%8Bupdate-where-%E5%8A%A0%E9%94%81%E5%90%8E%E9%87%8A%E6%94%BE%E9%94%81">MySQL事务与锁-2.4.2 RC级别下update … where 加锁后释放锁</a>里的场景。</p>
+<p>id是普通非唯一索引的时候<code>update t_stock set amount={stock.amount} where id={stock.id} and version = {stock.version};</code>会锁stock.id对应的记录，单发现不符合where条件里的version会立即释放锁，参考<a href="https://adamswanglin.github.io/2018/04/27/mysql-transaction/#242-rc%E7%BA%A7%E5%88%AB%E4%B8%8Bupdate-where-%E5%8A%A0%E9%94%81%E5%90%8E%E9%87%8A%E6%94%BE%E9%94%81" target="_blank" rel="noopener">MySQL事务与锁-2.4.2 RC级别下update … where 加锁后释放锁</a>里的场景。</p>
 <h3 id="rr级别下高并发结果">RR级别下高并发结果</h3>
 <ol>
 <li>id主键索引</li>
@@ -502,8 +502,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "adamswanglins-blog";
-    var disqus_identifier = "https://adamswanglin.github.io/2018/04/28/mysql-lock/";
-    var disqus_url = "https://adamswanglin.github.io/2018/04/28/mysql-lock/";
+    var disqus_identifier = "https://adamswanglin.com/2018/04/28/mysql-lock/";
+    var disqus_url = "https://adamswanglin.com/2018/04/28/mysql-lock/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -649,7 +649,7 @@
 <script>
     // only load tagcloud.js in tag.html
     if($('#tag_cloud').length !== 0){
-        async("https://adamswanglin.github.io/js/jquery.tagcloud.js",function(){
+        async("https://adamswanglin.com/js/jquery.tagcloud.js",function(){
             $.fn.tagcloud.defaults = {
                 //size: {start: 1, end: 1, unit: 'em'},
                 color: {start: '#bbbbee', end: '#0085a1'},
@@ -702,7 +702,7 @@
 	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
     <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
 <!-- Image to hack wechat -->
-<img src="https://adamswanglin.github.io/img/icon_wechat.png" width="0" height="0" />
+<img src="https://adamswanglin.com/img/icon_wechat.png" width="0" height="0" />
 <!-- Migrate from head to bottom, no longer block render and still work -->
 
 </body>
